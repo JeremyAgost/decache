@@ -437,7 +437,7 @@ void print_export_commands(const uintptr_t start, int len)
 	CommonLog("Scanning... %d", len);
 	char strbuf[0x200];
 	
-	scan_export_tree((uint8_t*) start, len, strbuf, print_export_commands_sub, NULL);
+	scan_export_tree((uint8_t*) start, len, strbuf, print_export_commands_sub, 0);
 
 }
 

@@ -186,7 +186,7 @@ uintptr_t locate_address(uint32_t addr, bool printSource = 0)
 	{
 		CommonLog("Could not locate %x", addr);
 	}
-	return NULL;
+	return 0;
 }
 
 static inline bool in_dyld_cache(uint32_t addr)
@@ -696,7 +696,7 @@ void text_dellvm(uintptr_t fbuf, section* sect, seg_adjust* tseg, seg_adjust* ds
 			// add rX pc;
 			if((op & 0xFF78) == 0x4478)
 			{
-				int rX = op & 0x7 | ((op & 0x80) ? 0x8 : 0);
+				int rX = (op & 0x7) | ((op & 0x80) ? 0x8 : 0);
 				
 				uintptr_t lptr = movw[rX];
 				uintptr_t hptr = movt[rX];
@@ -742,16 +742,16 @@ void text_dellvm(uintptr_t fbuf, section* sect, seg_adjust* tseg, seg_adjust* ds
 					
 					uint32_t lop = 0xF240//0000
 								 | rX << 24
-					             | (lval >> 12) & 0xF
-					             | (lval >> 1) & 0x400
-					             | (lval << 20) & 0x70000000
-								 | (lval << 16) & 0xFF0000;
+					             | ((lval >> 12) & 0xF)
+					             | ((lval >> 1) & 0x400)
+					             | ((lval << 20) & 0x70000000)
+								 | ((lval << 16) & 0xFF0000);
 					uint32_t hop = 0xF2C0//0000
 						 		 | rX << 24
-					             | (hval >> 12) & 0xF
-					             | (hval >> 1) & 0x400
-					             | (hval << 20) & 0x70000000
-								 | (hval << 16) & 0xFF0000;
+					             | ((hval >> 12) & 0xF)
+					             | ((hval >> 1) & 0x400)
+					             | ((hval << 20) & 0x70000000)
+								 | ((hval << 16) & 0xFF0000);
 					*(uint32_t*)lptr = lop;
 					*(uint32_t*)hptr = hop;
 					movw[rX] = 0;
@@ -1885,7 +1885,7 @@ section* append_section(uintptr_t fbuf, section* newsect)
 	
 	// first scan: make sure we have space
 	{
-		uint32_t lowestOffset = 1<<31-1;
+		uint32_t lowestOffset = (1<<31)-1;
 		
 		uintptr_t lcptr = cmd_base;
 		for(uint32_t i=0; i<ncmds; i++)
